@@ -8,7 +8,7 @@ AI-powered, context-aware excuses on demand.
 
 ## What is this?
 
-EaaS is the intelligent successor to "No-as-a-Service" (NaaS). While NaaS returns random pre-written rejections, EaaS leverages **LLaMA 3.3 70B** via Groq to craft unique, context-aware excuses tailored to your specific situation and chosen tone.
+XaaS is the intelligent successor to "No-as-a-Service" (NaaS). While NaaS returns random pre-written rejections, XaaS leverages **LLaMA 3.3 70B** via Groq to craft unique, context-aware excuses tailored to your specific situation and chosen tone.
 
 ```bash
 curl -X POST https://your-api.render.com/excuse \
@@ -110,7 +110,7 @@ Opens at `http://localhost:5173`.
 ## Project Structure
 
 ```text
-eaas/
+XaaS/
 ├── backend/
 │   ├── main.py              # API entry point & middleware config
 │   ├── routes/
