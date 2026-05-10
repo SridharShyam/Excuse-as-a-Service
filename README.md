@@ -190,7 +190,7 @@ Your key stays yours. The repo contains no secrets.
 
 ## Inspired By
 
-Inspired by [No-as-a-Service](https://github.com/no-as-a-service/no-as-a-service).
+Inspired by [No-as-a-Service](https://github.com/hotheadhacker/no-as-a-service.git).
 
 ## License
 
