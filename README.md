@@ -1,4 +1,4 @@
-# 🎭 Excuse as a Service (EaaS)
+# 🎭 Excuse as a Service (XaaS)
 
 AI-powered, context-aware excuses on demand.
 
