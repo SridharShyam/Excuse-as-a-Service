@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap');
+
+:root {
+  --bg:          #FFFBF0;
+  --surface:     #FFFFFF;
+  --nav:         #FF6B6B;
+  --accent:      #FFE66D;
+  --ink:         #1A1A2E;
+  --muted:       #888888;
+  --result-bg:   #F0FFF4;
+  --result-accent: #4CAF50;
+  --code-bg:     #1A1A2E;
+  --code-text:   #FFE66D;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg);
+  font-family: 'Nunito', sans-serif;
+  color: var(--ink);
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D0C8B8;
+  border-radius: 3px;
+}
+
+/* Input Autofill Override */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--bg) inset !important;
+  -webkit-text-fill-color: var(--ink) !important;
+}

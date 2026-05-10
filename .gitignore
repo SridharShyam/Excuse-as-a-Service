@@ -1,0 +1,27 @@
+# ── Backend secrets (NEVER commit these) ──────────────────────────────────
+backend/.env
+
+# ── Python cache ──────────────────────────────────────────────────────────
+backend/__pycache__/
+backend/**/__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+
+# ── Python virtual environments ───────────────────────────────────────────
+backend/.venv/
+backend/venv/
+venv/
+.venv/
+
+# ── Frontend build artifacts ───────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# ── OS / editor artifacts ─────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
