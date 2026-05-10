@@ -49,9 +49,10 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",      # Vite dev server
-        "http://localhost:3000",      # alternate local port
-        "https://*.vercel.app",       # Vercel preview + prod deployments
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "https://excuse-as-a-service.vercel.app",   # your exact Vercel URL
+        "https://*.vercel.app",                      # covers preview deployments
     ],
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
