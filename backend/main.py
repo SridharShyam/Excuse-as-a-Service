@@ -54,7 +54,7 @@ app.add_middleware(
         "https://excuse-as-a-service-lovat.vercel.app",   # your exact Vercel URL
         "https://*.vercel.app",                      # covers preview deployments
     ],
-    allow_methods=["GET", "POST"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
 
