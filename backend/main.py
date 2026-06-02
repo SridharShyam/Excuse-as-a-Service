@@ -42,23 +42,16 @@ app = FastAPI(
     ],
 )
 
-# ── CORS ─────────────────────────────────────────────────────────────────────
-# Allow the Vite dev server and any Vercel deployment.
-# Before going to production, replace "https://*.vercel.app" with your
-# exact Vercel deployment URL (e.g. "https://eaas.vercel.app").
+# 1. CORS first
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "https://excuse-as-a-service.vercel.app",    # your primary domain
-        "https://*.vercel.app",                       # covers all preview URLs
-    ],
-    allow_methods=["GET", "POST", "OPTIONS"],         # explicitly allow OPTIONS
-    allow_headers=["Content-Type"],
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# ── Rate Limiting ─────────────────────────────────────────────────────────────
+# 2. Rate limiting second
 app.add_middleware(BaseHTTPMiddleware, dispatch=rate_limit_middleware)
 
 # ── Routes ───────────────────────────────────────────────────────────────────
