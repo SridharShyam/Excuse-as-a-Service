@@ -1,9 +1,21 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 from models.schemas import ExcuseRequest, ExcuseResponse
 from core.prompt import build_prompt
 from core.groq_client import generate_excuse
 
 router = APIRouter()
+
+
+@router.options("/excuse")
+async def excuse_options():
+    return Response(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+        },
+    )
 
 
 @router.post(
