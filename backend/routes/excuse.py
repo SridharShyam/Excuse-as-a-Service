@@ -1,32 +1,16 @@
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Depends
 from models.schemas import ExcuseRequest, ExcuseResponse
 from core.prompt import build_prompt
 from core.groq_client import generate_excuse
+from middleware.rate_limit import rate_limit
 
 router = APIRouter()
-
-
-@router.options("/excuse")
-async def excuse_options():
-    return Response(
-        status_code=200,
-        headers={
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST, OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type",
-        },
-    )
-
 
 @router.post(
     "/excuse",
     response_model=ExcuseResponse,
+    dependencies=[Depends(rate_limit)],
     summary="Generate an excuse",
-    description=(
-        "Generate a context-aware, AI-powered excuse in your chosen tone.\n\n"
-        "**Tones:** `corporate` | `casual` | `dramatic` | `technical` | `poetic` | `villain`\n\n"
-        "**Rate limit:** 10 requests per minute per IP address."
-    ),
 )
 async def create_excuse(payload: ExcuseRequest) -> ExcuseResponse:
     system_prompt, user_prompt = build_prompt(
