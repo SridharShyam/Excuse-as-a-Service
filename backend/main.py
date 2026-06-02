@@ -11,7 +11,7 @@ Environment variables (set in backend/.env, see .env.example):
   GROQ_API_KEY — required. Get free key at https://console.groq.com
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from dotenv import load_dotenv
@@ -51,11 +51,11 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://localhost:3000",
-        "https://excuse-as-a-service-lovat.vercel.app",   # your exact Vercel URL
+        "https://excuse-as-a-service.vercel.app",    # your primary domain
+        "https://*.vercel.app",                       # covers all preview URLs
     ],
-    allow_origin_regex=r"https://.*\.vercel\.app",  # covers preview deployments
-    allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],         # explicitly allow OPTIONS
+    allow_headers=["Content-Type"],
 )
 
 # ── Rate Limiting ─────────────────────────────────────────────────────────────
@@ -74,3 +74,8 @@ async def root():
 async def health():
     """Returns API status and version. Use to verify the service is running."""
     return HealthResponse(status="ok", version="1.0.0")
+
+
+@app.head("/health", tags=["Health"], include_in_schema=False)
+async def health_head():
+    return Response(status_code=200)
