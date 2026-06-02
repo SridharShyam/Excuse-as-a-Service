@@ -52,10 +52,10 @@ app.add_middleware(
         "http://localhost:5173",
         "http://localhost:3000",
         "https://excuse-as-a-service-lovat.vercel.app",   # your exact Vercel URL
-        "https://*.vercel.app",                      # covers preview deployments
     ],
+    allow_origin_regex=r"https://.*\.vercel\.app",  # covers preview deployments
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type"],
+    allow_headers=["*"],
 )
 
 # ── Rate Limiting ─────────────────────────────────────────────────────────────
