@@ -42,7 +42,10 @@ app = FastAPI(
     ],
 )
 
-# ── CORS ─────────────────────────────────────────────────────────────────────
+# ── Rate Limiting (register first → runs second) ──────────────────────────────
+app.add_middleware(BaseHTTPMiddleware, dispatch=rate_limit_middleware)
+
+# ── CORS (register second → runs first) ──────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -51,8 +54,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Rate Limiting ─────────────────────────────────────────────────────────────
-app.add_middleware(BaseHTTPMiddleware, dispatch=rate_limit_middleware)
 
 # ── Routes ───────────────────────────────────────────────────────────────────
 app.include_router(excuse_router, tags=["Excuse"])
