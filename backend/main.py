@@ -42,7 +42,7 @@ app = FastAPI(
     ],
 )
 
-# 1. CORS first
+# ── CORS ─────────────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -51,7 +51,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 2. Rate limiting second
+# ── Rate Limiting ─────────────────────────────────────────────────────────────
 app.add_middleware(BaseHTTPMiddleware, dispatch=rate_limit_middleware)
 
 # ── Routes ───────────────────────────────────────────────────────────────────
