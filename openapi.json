@@ -1,0 +1,268 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Excuse as a Service (EaaS)",
+    "description": "An API that generates context-aware, tone-calibrated explanations and excuses. Six tones available: corporate, casual, dramatic, technical, poetic, villain. Rate limited to 10 requests per minute per IP. Free to use.",
+    "contact": {
+      "name": "Shyam",
+      "url": "https://github.com/SridharShyam"
+    },
+    "license": {
+      "name": "MIT"
+    },
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/excuse": {
+      "post": {
+        "tags": [
+          "Excuse"
+        ],
+        "summary": "Generate an excuse with risk analysis",
+        "operationId": "create_excuse_excuse_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExcuseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExcuseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ExcuseRequest": {
+        "properties": {
+          "situation": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 3,
+            "title": "Situation",
+            "description": "The situation you need an excuse for.",
+            "examples": [
+              "missed standup",
+              "late assignment submission"
+            ]
+          },
+          "tone": {
+            "$ref": "#/components/schemas/Tone",
+            "description": "Tone of the excuse. One of: corporate, casual, dramatic, technical, poetic, villain.",
+            "default": "casual"
+          },
+          "medium": {
+            "$ref": "#/components/schemas/Medium",
+            "description": "Delivery channel: standard, slack, email, sms, git_commit.",
+            "default": "standard"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context",
+            "description": "Optional extra context, e.g. 'talking to my professor'."
+          }
+        },
+        "type": "object",
+        "required": [
+          "situation"
+        ],
+        "title": "ExcuseRequest"
+      },
+      "ExcuseResponse": {
+        "properties": {
+          "excuse": {
+            "type": "string",
+            "title": "Excuse"
+          },
+          "situation": {
+            "type": "string",
+            "title": "Situation"
+          },
+          "tone": {
+            "$ref": "#/components/schemas/Tone"
+          },
+          "medium": {
+            "$ref": "#/components/schemas/Medium"
+          },
+          "risk_score": {
+            "type": "string",
+            "enum": [
+              "Low",
+              "Medium",
+              "High"
+            ],
+            "title": "Risk Score"
+          },
+          "plausibility_percentage": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Plausibility Percentage"
+          },
+          "followup_defense": {
+            "type": "string",
+            "title": "Followup Defense"
+          }
+        },
+        "type": "object",
+        "required": [
+          "excuse",
+          "situation",
+          "tone",
+          "medium",
+          "risk_score",
+          "plausibility_percentage",
+          "followup_defense"
+        ],
+        "title": "ExcuseResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "version"
+        ],
+        "title": "HealthResponse"
+      },
+      "Medium": {
+        "type": "string",
+        "enum": [
+          "standard",
+          "slack",
+          "email",
+          "sms",
+          "git_commit"
+        ],
+        "title": "Medium"
+      },
+      "Tone": {
+        "type": "string",
+        "enum": [
+          "corporate",
+          "casual",
+          "dramatic",
+          "technical",
+          "poetic",
+          "villain"
+        ],
+        "title": "Tone"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-// In production (Vercel), set VITE_API_URL to your Render backend URL.
-// In development, the Vite proxy forwards /excuse to localhost:8000.
+// In production (Vercel), set VITE_API_URL to your backend URL.
+// In development, the Vite proxy forwards /excuse to localhost:8008.
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
 export function useExcuse() {
@@ -9,7 +9,7 @@ export function useExcuse() {
   const [loading, setLoading] = useState(false)
   const [error,   setError]   = useState(null)   // error message string | null
 
-  async function generate({ situation, tone, context }) {
+  async function generate({ situation, tone, medium = 'standard', context }) {
     setLoading(true)
     setError(null)
     setExcuse(null)
@@ -21,7 +21,7 @@ export function useExcuse() {
         body:    JSON.stringify({
           situation,
           tone,
-          // Only include context if non-empty — backend treats null and omitted the same
+          medium,
           ...(context?.trim() ? { context: context.trim() } : {}),
         }),
       })
@@ -29,7 +29,6 @@ export function useExcuse() {
       const data = await res.json()
 
       if (!res.ok) {
-        // FastAPI validation errors have a detail array; API errors have detail.message
         const msg =
           Array.isArray(data.detail)
             ? data.detail.map(e => e.msg).join(', ')
@@ -38,8 +37,10 @@ export function useExcuse() {
       }
 
       setExcuse(data)
+      return data
     } catch (e) {
       setError(e.message)
+      return null
     } finally {
       setLoading(false)
     }

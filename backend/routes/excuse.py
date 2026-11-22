@@ -10,18 +10,22 @@ router = APIRouter()
     "/excuse",
     response_model=ExcuseResponse,
     dependencies=[Depends(rate_limit)],
-    summary="Generate an excuse",
+    summary="Generate an excuse with risk analysis",
 )
 async def create_excuse(payload: ExcuseRequest) -> ExcuseResponse:
     system_prompt, user_prompt = build_prompt(
         situation=payload.situation,
         tone=payload.tone,
+        medium=payload.medium,
         context=payload.context,
     )
-    excuse, model = await generate_excuse(system_prompt, user_prompt)
+    result = await generate_excuse(system_prompt, user_prompt)
     return ExcuseResponse(
-        excuse=excuse,
+        excuse=result["excuse"],
         situation=payload.situation,
         tone=payload.tone,
-        model=model,
+        medium=payload.medium,
+        risk_score=result["risk_score"],
+        plausibility_percentage=result["plausibility_percentage"],
+        followup_defense=result["followup_defense"],
     )

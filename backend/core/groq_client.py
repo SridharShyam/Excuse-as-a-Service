@@ -1,25 +1,13 @@
-"""
-groq_client.py — Async Groq API wrapper for EaaS.
-
-Model:   llama-3.3-70b-versatile
-Why:     Best output quality on Groq's free tier. Fast inference (<1s typical).
-Limits:  14,400 requests/day, 6,000 tokens/min (free tier as of 2025).
-         Each EaaS request consumes ~200–350 tokens total. Effectively unlimited
-         for a portfolio project.
-
-The client is instantiated once at module level — AsyncGroq is thread-safe
-and safe to reuse across requests. Do not re-instantiate per request.
-
-Temperature 0.9 — high creativity for variety. Each call to the same situation
-should produce a noticeably different excuse.
-Max tokens 150 — hard cap. Excuses must stay short and punchy.
-"""
-
 import os
+import json
+import logging
 from groq import AsyncGroq
 from fastapi import HTTPException
 
+logger = logging.getLogger("eaas.groq_client")
 _client: AsyncGroq | None = None
+REQUEST_TIMEOUT_SECONDS = 15.0
+DEFAULT_MODEL = os.getenv("GROQ_MODEL", "qwen/qwen3.8-27b")
 
 
 def get_client() -> AsyncGroq:
@@ -28,27 +16,31 @@ def get_client() -> AsyncGroq:
     if _client is None:
         api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
+            logger.error("GROQ_API_KEY is not set.")
             raise RuntimeError(
                 "GROQ_API_KEY is not set. "
                 "Copy backend/.env.example to backend/.env and add your key. "
                 "Get a free key at https://console.groq.com"
             )
-        _client = AsyncGroq(api_key=api_key)
+        _client = AsyncGroq(api_key=api_key, timeout=REQUEST_TIMEOUT_SECONDS)
     return _client
 
 
 async def generate_excuse(
     system_prompt: str,
     user_prompt: str,
-) -> tuple[str, str]:
+) -> dict:
     """
-    Send prompts to Groq and return (excuse_text, model_name).
-
-    Raises HTTPException(502) on any upstream API failure so FastAPI
-    returns a clean JSON error rather than a 500 traceback.
+    Send prompts to Groq and return a parsed JSON dict:
+    {
+      "excuse": str,
+      "risk_score": "Low" | "Medium" | "High",
+      "plausibility_percentage": int,
+      "followup_defense": str
+    }
     """
     client = get_client()
-    model  = "llama-3.3-70b-versatile"
+    model = os.getenv("GROQ_MODEL", DEFAULT_MODEL)
 
     try:
         response = await client.chat.completions.create(
@@ -57,27 +49,41 @@ async def generate_excuse(
                 {"role": "system", "content": system_prompt},
                 {"role": "user",   "content": user_prompt},
             ],
-            temperature=0.9,
-            max_tokens=150,
-            top_p=0.95,
-            stream=False,
+            temperature=0.8,
+            max_tokens=350,
+            response_format={"type": "json_object"},
         )
 
-        excuse = response.choices[0].message.content.strip()
+        content = response.choices[0].message.content.strip()
+        data = json.loads(content)
 
-        # Strip surrounding quotes if the model wraps its output in them.
-        # Some models do this despite instructions. Strip both single and double.
-        if len(excuse) >= 2 and excuse[0] in ('"', "'") and excuse[-1] == excuse[0]:
-            excuse = excuse[1:-1].strip()
+        # Sanitize types and defaults
+        excuse = str(data.get("excuse", "")).strip()
+        risk = data.get("risk_score", "Low")
+        if risk not in ("Low", "Medium", "High"):
+            risk = "Low"
 
-        return excuse, model
+        plausibility = data.get("plausibility_percentage", 85)
+        try:
+            plausibility = max(1, min(100, int(plausibility)))
+        except (ValueError, TypeError):
+            plausibility = 85
+
+        followup = str(data.get("followup_defense", "")).strip()
+
+        return {
+            "excuse": excuse,
+            "risk_score": risk,
+            "plausibility_percentage": plausibility,
+            "followup_defense": followup,
+        }
 
     except Exception as e:
+        logger.error(f"Groq API upstream failure: {e}", exc_info=True)
         raise HTTPException(
             status_code=502,
             detail={
                 "error":   "AI inference failed",
-                "message": "Groq API returned an error. Try again in a moment.",
-                "detail":  str(e),
+                "message": "Upstream inference returned an error or timed out. Try again in a moment.",
             },
         )

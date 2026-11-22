@@ -1,16 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  --bg:          #FFFBF0;
+  /* Surfaces: Warm clean off-white foundation */
+  --bg:          #FBFBFA;
   --surface:     #FFFFFF;
-  --nav:         #FF6B6B;
-  --accent:      #FFE66D;
-  --ink:         #1A1A2E;
-  --muted:       #888888;
-  --result-bg:   #F0FFF4;
-  --result-accent: #4CAF50;
-  --code-bg:     #1A1A2E;
-  --code-text:   #FFE66D;
+  --surface-alt: #F4F4F2;
+  
+  /* Brand Accents: Strict single primary accent with intentional high contrast */
+  --primary:     #18181B;     /* Zinc 900 for solid structure */
+  --accent:      #2563EB;     /* Single focused bright moment: crisp royal cobalt */
+  --accent-hover:#1D4ED8;
+  --accent-subtle:#EFF6FF;
+  
+  /* Text & Border Tokens */
+  --ink:         #09090B;     /* Crisp near-black */
+  --ink-secondary: #52525B;  /* Muted neutral body */
+  --border:      #E4E4E7;     /* Standardized crisp 1px / 2px borders */
+  --border-strong:#18181B;    /* Focused interactive borders */
+  
+  /* Feedback States */
+  --result-bg:   #F8FAFC;
+  --result-border:#CBD5E1;
+  --result-badge:#0F172A;
+  --error-bg:    #FEF2F2;
+  --error-border:#FCA5A5;
+  --error-text:  #B91C1C;
+  
+  /* Code surfaces */
+  --code-bg:     #18181B;
+  --code-text:   #F4F4F5;
+  --code-muted:  #A1A1AA;
 }
 
 * {
@@ -19,21 +38,27 @@
 
 body {
   background-color: var(--bg);
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: var(--ink);
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+code, pre, .font-mono {
+  font-family: 'JetBrains Mono', monospace;
 }
 
 ::selection {
-  background: var(--accent);
-  color: var(--ink);
+  background: #DBEAFE;
+  color: #1E3A8A;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -41,15 +66,18 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D0C8B8;
-  border-radius: 3px;
+  background: #D4D4D8;
+  border-radius: 4px;
 }
 
-/* Input Autofill Override */
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px var(--bg) inset !important;
-  -webkit-text-fill-color: var(--ink) !important;
+/* Pulse animation for skeleton loader */
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.9; }
+}
+
+.skeleton-block {
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+  background: #E4E4E7;
+  border-radius: 4px;
 }
