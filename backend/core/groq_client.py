@@ -14,7 +14,9 @@ def get_client() -> AsyncGroq:
     """Return the singleton AsyncGroq client, initializing it on first call."""
     global _client
     if _client is None:
-        api_key = os.getenv("GROQ_API_KEY")
+        api_key = os.getenv("GROQ_API_KEY", "")
+        # Strip whitespace, newlines, and accidental quotes
+        api_key = api_key.strip().strip("'\"").strip()
         if not api_key:
             logger.error("GROQ_API_KEY is not set.")
             raise RuntimeError(
