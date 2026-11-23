@@ -80,10 +80,21 @@ async def generate_excuse(
 
     except Exception as e:
         logger.error(f"Groq API upstream failure: {e}", exc_info=True)
+        # Return sanitized error message with the root cause so deployment diagnosis is immediate
+        err_msg = str(e)
+        if "api_key" in err_msg.lower() or "authentication" in err_msg.lower() or "unauthorized" in err_msg.lower():
+            reason = "Invalid or missing GROQ_API_KEY on the server."
+        elif "model" in err_msg.lower():
+            reason = f"Upstream model error: {err_msg}"
+        elif "rate" in err_msg.lower():
+            reason = "Groq API rate limit reached. Try again shortly."
+        else:
+            reason = f"Upstream inference error: {err_msg}"
+
         raise HTTPException(
             status_code=502,
             detail={
                 "error":   "AI inference failed",
-                "message": "Upstream inference returned an error or timed out. Try again in a moment.",
+                "message": reason,
             },
         )
