@@ -83,7 +83,15 @@ async def root():
 
 @app.get("/health", response_model=HealthResponse, tags=["Health"])
 async def health():
-    return HealthResponse(status="ok", version="1.0.0")
+    key = os.getenv("GROQ_API_KEY", "")
+    key_clean = key.strip().strip("'\"").strip()
+    prefix = key_clean[:7] if key_clean else "NONE"
+    suffix = key_clean[-4:] if len(key_clean) >= 4 else "NONE"
+    length = len(key_clean)
+    return HealthResponse(
+        status=f"ok (key_len={length}, key_prefix={prefix}..., key_suffix=...{suffix})",
+        version="1.5.0"
+    )
 
 @app.head("/health", tags=["Health"], include_in_schema=False)
 async def health_head():
